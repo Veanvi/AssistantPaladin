@@ -1,0 +1,78 @@
+﻿<Window x:Class="AssistantPaladin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AssistantPaladin"
+        Title="MainWindow" ResizeMode="NoResize" WindowStyle="None" Height="300" Background="White"
+        Foreground="Black" Width="420" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="35" MaxHeight="35"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" MinHeight="35" MaxHeight="35"/>
+        </Grid.RowDefinitions>
+        <Border>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label MouseLeftButtonDown="LabelTitle_MouseLeftButtonDown" x:Name="LabelTitle" Grid.Column="0"
+               VerticalContentAlignment="Center" FontFamily="Calibri" FontSize="16" FontWeight="Bold"
+               HorizontalContentAlignment="Stretch" Background="#FF06870C" Foreground="White">
+                    Настройка автострельбы
+                </Label>
+                <Button Click="ButtonClose_Click" x:Name="ButtonClose" Grid.Column="1" Background="#FFFF7878" FontSize="20"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">✕</Button>
+            </Grid>
+        </Border>
+        <Grid Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <GroupBox Header="Цвета прицела">
+                    <Rectangle Name="aimColor" Height="15" Fill="Gray"></Rectangle>
+                </GroupBox>
+                <GroupBox Header="Цвета союзников">
+                    <Rectangle Name="allyColors" Height="15" Fill="Gray"></Rectangle>
+                </GroupBox>
+                <GroupBox Header="Цвета противников">
+                    <Rectangle Name="anemyColors" Height="15" Fill="Gray"></Rectangle>
+                </GroupBox>
+                <StackPanel Grid.Row="3" Grid.ColumnSpan="2">
+                    <CheckBox Name="chBoxLKM" IsChecked="True" Click="chBoxLKM_Click">AutoShot ЛКМ</CheckBox>
+                    <CheckBox Name="DisableRightButton" Click="DisableRightButton_Click">
+                        AutoShot ПКМ (на союзников)
+                    </CheckBox>
+                    <CheckBox
+                    Name="EnableBurstShutingCheckBox" IsChecked="True" Click="EnableBurstShutingCheckBox_Click">
+                        Стрельба зажимом
+                    </CheckBox>
+                    
+                    <CheckBox Name="chBoxOverlay" IsChecked="True" Click="chBoxOverlay_Click">Оверлей</CheckBox>
+                    <CheckBox Name="chBoxTranslater" Click="chBoxTranslater_Click">Виджет переводчик</CheckBox>
+                    <CheckBox Name="chKayKlicker" Click="chKayKlicker_Click">Цикличное нажатия клавиш:</CheckBox>
+                    <TextBox Margin="15, 2, 0, 2" Name="tbKayList">q</TextBox>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1">
+                <Label FontWeight="Bold">Горячие клавиши</Label>
+                <ListBox>
+                    <ListBoxItem>1 - Бинд цвета прицела</ListBoxItem>
+                    <ListBoxItem>2 - Бинд цвета противников</ListBoxItem>
+                    <ListBoxItem>3 - Бинд цвета союзников</ListBoxItem>
+                    <ListBoxItem>4 - Включить автострельбу</ListBoxItem>
+                    <ListBoxItem>5 - Блокировка горячих клавиш</ListBoxItem>
+                    <ListBoxItem>6 - Сбросить все бинды</ListBoxItem>
+                    <ListBoxItem>Tab - Строка для перевода "ru-en"</ListBoxItem>
+                </ListBox>
+                <TextBlock>Поддерживается мультибиндинг</TextBlock>
+            </StackPanel>
+        </Grid>
+        <Button Click="ButtonStartWork_Click" x:Name="ButtonStartWork" Grid.Row="2" Background="#FFB4FFBB">Включить</Button>
+    </Grid>
+</Window>
