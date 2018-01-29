@@ -1,4 +1,6 @@
-﻿using Open.WinKeyboardHook;
+﻿// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+using Open.WinKeyboardHook;
 using System;
 using System.CodeDom.Compiler;
 using System.ComponentModel;
@@ -21,16 +23,16 @@ namespace AssistantPaladin
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BackgroundWorker worker = new BackgroundWorker();
-        TranslateWIndow tranWindow;
-        OverlayWindow overlay;
-        KayKlicker kayKlicker;
-        private readonly IKeyboardInterceptor _interceptor;
         public AutoShot autoSHot;
-        private bool keyLock = false;
-        private bool translatorActive = false;
+        private readonly IKeyboardInterceptor _interceptor;
         private bool isActiveOverlay = true;
+        private KayKlicker kayKlicker;
+        private bool keyLock = false;
         private bool loopKeyClick = false;
+        private OverlayWindow overlay;
+        private bool translatorActive = false;
+        private TranslateWIndow tranWindow;
+        private BackgroundWorker worker = new BackgroundWorker();
 
         public MainWindow()
         {
@@ -82,63 +84,9 @@ namespace AssistantPaladin
             }
         }
 
-        private void ClearAllBinds()
-        {
-            autoSHot.AimColor = Colors.White;
-            autoSHot.AllyColorList.Clear();
-            autoSHot.AnemyColorList.Clear();
-            repaintColor();
-        }
-
-        private void TranslateChat()
-        {
-            if (tranWindow == null)
-                tranWindow = new TranslateWIndow();
-            else if (!tranWindow.IsVisible)
-            {
-                tranWindow.Close();
-                tranWindow = null;
-                tranWindow = new TranslateWIndow();
-            }
-            tranWindow?.Show();
-        }
-
-        private void repaintColor()
-        {
-            aimColor.Fill = new SolidColorBrush(autoSHot.AimColor);
-
-            var anemyColorsBrush = new LinearGradientBrush();
-            var allyColorBrush = new LinearGradientBrush();
-            anemyColorsBrush.StartPoint = new Point(0, 0);
-            anemyColorsBrush.EndPoint = new Point(1, 0);
-
-            double colorStep = 0.0;
-
-            foreach (Color color in autoSHot.AnemyColorList)
-            {
-                anemyColorsBrush.GradientStops.Add(new GradientStop(color, colorStep));
-                colorStep += (double)1 / (double)autoSHot.AnemyColorList.Count;
-            }
-
-            anemyColors.Fill = anemyColorsBrush;
-
-            foreach (Color color in autoSHot.AllyColorList)
-            {
-                allyColorBrush.GradientStops.Add(new GradientStop(color, colorStep));
-                colorStep += (double)1 / (double)autoSHot.AllyColorList.Count;
-            }
-
-            allyColors.Fill = allyColorBrush;
-        }
-
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
-        }
-
-        private void LabelTitle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
         }
 
         private void ButtonStartWork_Click(object sender, RoutedEventArgs e)
@@ -177,7 +125,7 @@ namespace AssistantPaladin
                 {
                     foreach (var ch in tbKayList.Text)
                     {
-                        if(ch != ',' && ch != ' ')
+                        if (ch != ',' && ch != ' ')
                         {
                             kayKlicker.charList.Add(ch);
                         }
@@ -187,10 +135,20 @@ namespace AssistantPaladin
             }
         }
 
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private void chBoxLKM_Click(object sender, RoutedEventArgs e)
         {
-            overlay?.Close();
-            tranWindow?.Close();
+            if ((bool)this.chBoxLKM.IsChecked)
+                autoSHot.isLeftButtonOn = true;
+            else
+                autoSHot.isLeftButtonOn = false;
+        }
+
+        private void chBoxOverlay_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)this.chBoxOverlay.IsChecked)
+                this.isActiveOverlay = true;
+            else
+                this.isActiveOverlay = false;
         }
 
         private void chBoxTranslater_Click(object sender, RoutedEventArgs e)
@@ -201,12 +159,20 @@ namespace AssistantPaladin
                 translatorActive = false;
         }
 
-        private void chBoxLKM_Click(object sender, RoutedEventArgs e)
+        private void chKayKlicker_Click(object sender, RoutedEventArgs e)
         {
-            if ((bool)this.chBoxLKM.IsChecked)
-                autoSHot.isLeftButtonOn = true;
+            if ((bool)this.chKayKlicker.IsChecked)
+                this.loopKeyClick = true;
             else
-                autoSHot.isLeftButtonOn = false;
+                this.loopKeyClick = false;
+        }
+
+        private void ClearAllBinds()
+        {
+            autoSHot.AimColor = Colors.White;
+            autoSHot.AllyColorList.Clear();
+            autoSHot.AnemyColorList.Clear();
+            repaintColor();
         }
 
         private void DisableRightButton_Click(object sender, RoutedEventArgs e)
@@ -225,20 +191,56 @@ namespace AssistantPaladin
                 autoSHot.isShootBurst = false;
         }
 
-        private void chBoxOverlay_Click(object sender, RoutedEventArgs e)
+        private void LabelTitle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if ((bool)this.chBoxOverlay.IsChecked)
-                this.isActiveOverlay = true;
-            else
-                this.isActiveOverlay = false;
+            DragMove();
         }
 
-        private void chKayKlicker_Click(object sender, RoutedEventArgs e)
+        private void repaintColor()
         {
-            if ((bool)this.chKayKlicker.IsChecked)
-                this.loopKeyClick = true;
-            else
-                this.loopKeyClick = false;
+            aimColor.Fill = new SolidColorBrush(autoSHot.AimColor);
+
+            var anemyColorsBrush = new LinearGradientBrush();
+            var allyColorBrush = new LinearGradientBrush();
+            anemyColorsBrush.StartPoint = new Point(0, 0);
+            anemyColorsBrush.EndPoint = new Point(1, 0);
+
+            double colorStep = 0.0;
+
+            foreach (Color color in autoSHot.AnemyColorList)
+            {
+                anemyColorsBrush.GradientStops.Add(new GradientStop(color, colorStep));
+                colorStep += (double)1 / (double)autoSHot.AnemyColorList.Count;
+            }
+
+            anemyColors.Fill = anemyColorsBrush;
+
+            foreach (Color color in autoSHot.AllyColorList)
+            {
+                allyColorBrush.GradientStops.Add(new GradientStop(color, colorStep));
+                colorStep += (double)1 / (double)autoSHot.AllyColorList.Count;
+            }
+
+            allyColors.Fill = allyColorBrush;
+        }
+
+        private void TranslateChat()
+        {
+            if (tranWindow == null)
+                tranWindow = new TranslateWIndow();
+            else if (!tranWindow.IsVisible)
+            {
+                tranWindow.Close();
+                tranWindow = null;
+                tranWindow = new TranslateWIndow();
+            }
+            tranWindow.Show();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            overlay?.Close();
+            tranWindow?.Close();
         }
     }
 }
