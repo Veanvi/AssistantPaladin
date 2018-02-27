@@ -12,20 +12,23 @@ using System.Windows.Media;
 
 namespace AssistantPaladin
 {
-    class WinApiDropper : IDropper
+    internal class WinApiDropper : IDropper
     {
         public System.Windows.Media.Color GetColor()
         {
             Rectangle bounds = Screen.PrimaryScreen.Bounds;
 
             IntPtr hDC = GetDC(IntPtr.Zero);
-            uint pixel = GetPixel(hDC, bounds.Width / 2, bounds.Height / 2);
+            int w = bounds.Width / 2;
+            int h = bounds.Height / 2;
+            //uint pixel = GetPixel(hDC, bounds.Width / 2, bounds.Height / 2);
+            //uint pixel = GetPixel(hDC, 641, 511);
+            uint pixel = GetPixel(hDC, w + 1, h - 1);
             ReleaseDC(IntPtr.Zero, hDC);
 
             byte r = (byte)(pixel & 0x000000FF);
             byte g = (byte)((pixel & 0x0000FF00) >> 8);
             byte b = (byte)((pixel & 0x00FF0000) >> 16);
-
 
             var mColor = new System.Windows.Media.Color()
             {
@@ -45,6 +48,5 @@ namespace AssistantPaladin
 
         [DllImport("gdi32.dll")]
         public static extern uint GetPixel(IntPtr hDC, int x, int y);
-
     }
 }

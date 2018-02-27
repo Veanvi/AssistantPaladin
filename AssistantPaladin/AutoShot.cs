@@ -55,10 +55,10 @@ namespace AssistantPaladin
             XUP = 0x00000100
         }
 
-
         public AutoShot() : this(new WinApiDropper())
         {
         }
+
         public AutoShot(IDropper drop)
         {
             AutoItX.AutoItSetOption("MouseCoordMode", 1);
@@ -163,21 +163,21 @@ namespace AssistantPaladin
 
         private void SightСolorАnalysis()
         {
-            Color color1 = dropper.GetColor();
-            if (AimColor == color1)
+            Color nowAimColor = dropper.GetColor();
+            if (ApproximateColorSearch(nowAimColor, AimColor))
             {
-                enemyPoint.SetToZero();
+                //enemyPoint.SetToZero();
                 noOneInSight = true;
                 allyInSight = false;
                 enemyInSight = false;
                 return;
             }
 
-            foreach (Color color2 in AllyColorList)
+            foreach (Color bindColor in AllyColorList)
             {
-                if (color1 == color2)
+                if (ApproximateColorSearch(nowAimColor, bindColor))
                 {
-                    enemyPoint.SetToZero();
+                    //enemyPoint.SetToZero();
                     noOneInSight = false;
                     allyInSight = true;
                     enemyInSight = false;
@@ -185,12 +185,12 @@ namespace AssistantPaladin
                 }
             }
 
-            foreach (Color color2 in AnemyColorList)
+            foreach (Color bindColor in AnemyColorList)
             {
-                if (color1 == color2)
+                if (ApproximateColorSearch(nowAimColor, bindColor))
                 {
-                    if (enemyPoint.X == 0 || enemyPoint.Y == 0)
-                        GetCursorPos(out enemyPoint);
+                    //if (enemyPoint.X == 0 || enemyPoint.Y == 0)
+                    //GetCursorPos(out enemyPoint);
                     noOneInSight = false;
                     allyInSight = false;
                     enemyInSight = true;
@@ -203,23 +203,36 @@ namespace AssistantPaladin
             enemyInSight = false;
         }
 
+        private bool ApproximateColorSearch(Color currentColor, Color desiretColor,
+            int searchSpreads = 500)
+        {
+            double fi = Math.Pow(currentColor.R - desiretColor.R, 2)
+                + Math.Pow(currentColor.G - desiretColor.G, 2)
+                + Math.Pow(currentColor.B - desiretColor.B, 2);
+
+            bool result = fi < searchSpreads;
+            return result;
+        }
+
         public void AddAimColor()
         {
             AimColor = dropper.GetColor();
             new SoundPlayer(Resources.goodSong).Play();
         }
 
-        public void AddAllyColor()
+        public async Task AddAllyColorAsync()
         {
             SoundPlayer ticPlayer = new SoundPlayer();
             ticPlayer.Stream = (Stream)Resources.ticking_clockSong;
             Color faundColor = new Color();
-            Parallel.Invoke((Action)(() =>
+            await Task.Run((Action)(() =>
             {
                 for (int index = 0; index < 10; ++index)
                 {
                     Color color = dropper.GetColor();
-                    if (color != AimColor && !AnemyColorList.Contains(color) && !AllyColorList.Contains(color))
+                    if (!ApproximateColorSearch(color, AimColor) &&
+                        !ListContainedColorChecking(color, AnemyColorList) &&
+                        !ListContainedColorChecking(color, AllyColorList))
                     {
                         faundColor = color;
                         new SoundPlayer((Stream)Resources.goodSong).Play();
@@ -235,17 +248,19 @@ namespace AssistantPaladin
                 new SoundPlayer((Stream)Resources.errorSong).Play();
         }
 
-        public void AddAnemyColor()
+        public async Task AddAnemyColorAsync()
         {
             SoundPlayer ticPlayer = new SoundPlayer();
             ticPlayer.Stream = (Stream)Resources.ticking_clockSong;
             Color faundColor = new Color();
-            Parallel.Invoke(() =>
+            await Task.Run(() =>
             {
                 for (int index = 0; index < 10; ++index)
                 {
                     Color color = dropper.GetColor();
-                    if (color != AimColor && !AnemyColorList.Contains(color) && !AllyColorList.Contains(color))
+                    if (!ApproximateColorSearch(color, AimColor) &&
+                        !ListContainedColorChecking(color, AnemyColorList) &&
+                        !ListContainedColorChecking(color, AllyColorList))
                     {
                         faundColor = color;
                         new SoundPlayer((Stream)Resources.goodSong).Play();
@@ -261,20 +276,31 @@ namespace AssistantPaladin
                 new SoundPlayer((Stream)Resources.errorSong).Play();
         }
 
+        private bool ListContainedColorChecking(Color currentCollor, IEnumerable<Color> ColorList)
+        {
+            foreach (var color in ColorList)
+            {
+                if (ApproximateColorSearch(currentCollor, color))
+                    return true;
+            }
+
+            return false;
+        }
+
         //Изменение чувствительности мыши
         [DllImport("User32.dll")]
-        static extern Boolean SystemParametersInfo(
+        private static extern Boolean SystemParametersInfo(
             UInt32 uiAction,
             UInt32 uiParam,
             UInt32 pvParam,
             UInt32 fWinIni);
 
         [DllImport("user32.dll")]
-        static extern void mouse_event(MouseEventFlags dwFlags, int dx, int dy, uint dwData, UIntPtr dwExtraInfo);
+        private static extern void mouse_event(MouseEventFlags dwFlags, int dx, int dy, uint dwData, UIntPtr dwExtraInfo);
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool GetCursorPos(out Point lpPoint);
+        private static extern bool GetCursorPos(out Point lpPoint);
 
         private struct Point
         {
@@ -283,6 +309,7 @@ namespace AssistantPaladin
                 X = x;
                 Y = y;
             }
+
             public int X { get; set; }
             public int Y { get; set; }
 

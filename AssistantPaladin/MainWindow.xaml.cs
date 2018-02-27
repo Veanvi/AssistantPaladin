@@ -24,7 +24,7 @@ namespace AssistantPaladin
     public partial class MainWindow : Window
     {
         public AutoShot autoSHot;
-        private readonly IKeyboardInterceptor _interceptor;
+        private IKeyboardInterceptor _interceptor;
         private bool isActiveOverlay = true;
         private KayKlicker kayKlicker;
         private bool keyLock = false;
@@ -42,6 +42,7 @@ namespace AssistantPaladin
             DataContext = autoSHot;
             worker.WorkerSupportsCancellation = true;
             worker.DoWork += (s, e) => autoSHot.Work();
+
             _interceptor = new KeyboardInterceptor();
             _interceptor.KeyPress += new EventHandler<KeyPressEventArgs>(_interceptor_KeyPress);
             _interceptor.StartCapturing();
@@ -68,9 +69,9 @@ namespace AssistantPaladin
                 if (e.KeyChar == '1')
                     autoSHot.AddAimColor();
                 if (e.KeyChar == '2')
-                    autoSHot.AddAllyColor();
+                    autoSHot.AddAllyColorAsync();
                 if (e.KeyChar == '3')
-                    autoSHot.AddAnemyColor();
+                    autoSHot.AddAnemyColorAsync();
                 if (e.KeyChar == '4')
                 {
                     ButtonStartWork_Click(new object(), new RoutedEventArgs());

@@ -24,11 +24,11 @@ namespace AssistantPaladin
     /// </summary>
     public partial class OverlayWindow : Window
     {
-        Rect rect;
-        const string gameName = "Paladins (32-bit, DX11)";
-        IntPtr gameHandle;
+        private Rect rect;
+        private const string gameName = "Paladins (64-bit, DX11)";
+        private IntPtr gameHandle;
 
-        struct Rect
+        private struct Rect
         {
             public int left, top, right, bottom;
         }
@@ -48,7 +48,6 @@ namespace AssistantPaladin
 
         private void WatchActiveWindow()
         {
-
             Task.Run(() =>
             {
                 while (true)
@@ -57,13 +56,11 @@ namespace AssistantPaladin
                     var p = GetForegroundWindow();
                     if (gameHandle != GetForegroundWindow())
                     {
-
                         Dispatcher.InvokeAsync(() =>
                         {
                             this.Opacity = 0;
                         });
                     }
-
                     else
                     {
                         Dispatcher.InvokeAsync(() =>
@@ -75,7 +72,6 @@ namespace AssistantPaladin
                 }
             });
         }
-
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -90,12 +86,11 @@ namespace AssistantPaladin
             this.Width = rect.right - rect.left;
             this.Height = rect.bottom - rect.top;
 
-            this.Top = rect.top;
-            this.Left = rect.left;
+            this.Top = rect.top - 1;
+            this.Left = rect.left + 1;
 
             WatchActiveWindow();
             WatchColorAim();
-
         }
 
         private void WatchColorAim()
@@ -124,10 +119,10 @@ namespace AssistantPaladin
         public static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
 
         [DllImport("user32.dll", SetLastError = true)]
-        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll")]
-        static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
+        private static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();

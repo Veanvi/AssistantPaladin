@@ -8,15 +8,15 @@
         Foreground="Black" Width="420" Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" MinHeight="35" MaxHeight="35"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*" MinHeight="35" MaxHeight="35"/>
+            <RowDefinition Height="*" MinHeight="35" MaxHeight="35" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" MinHeight="35" MaxHeight="35" />
         </Grid.RowDefinitions>
         <Border>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="4*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Label MouseLeftButtonDown="LabelTitle_MouseLeftButtonDown" x:Name="LabelTitle" Grid.Column="0"
                VerticalContentAlignment="Center" FontFamily="Calibri" FontSize="16" FontWeight="Bold"
@@ -29,8 +29,8 @@
         </Border>
         <Grid Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
                 <GroupBox Header="Цвета прицела">
@@ -51,7 +51,7 @@
                     Name="EnableBurstShutingCheckBox" IsChecked="True" Click="EnableBurstShutingCheckBox_Click">
                         Стрельба зажимом
                     </CheckBox>
-                    
+
                     <CheckBox Name="chBoxOverlay" IsChecked="True" Click="chBoxOverlay_Click">Оверлей</CheckBox>
                     <CheckBox Name="chBoxTranslater" Click="chBoxTranslater_Click">Виджет переводчик</CheckBox>
                     <CheckBox Name="chKayKlicker" Click="chKayKlicker_Click">Цикличное нажатия клавиш:</CheckBox>
