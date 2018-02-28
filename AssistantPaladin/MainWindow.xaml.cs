@@ -15,6 +15,8 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using YandexTranslateCSharpSdk;
 using AutoIt;
+using UpdateCheckerGoogleDrive;
+using System.IO;
 
 namespace AssistantPaladin
 {
@@ -242,6 +244,68 @@ namespace AssistantPaladin
         {
             overlay?.Close();
             tranWindow?.Close();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            string uri = @"https://drive.google.com/open?id=1Gv4zAnSV71NpR5C0OFbbK56YeljuTppS";
+            var updateChecker = new UpdateChecker(
+                uri,
+                typeof(MainWindow).Assembly.GetName().Name);
+
+            updateChecker.DownloadProgressChanged += (s, n) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    this.LoadingPB.Visibility = Visibility.Visible;
+                    if (LoadingPB.Value != n.ProgressPercentage)
+                        this.LoadingPB.Value = n.ProgressPercentage;
+                });
+            };
+
+            updateChecker.DownloadFileCompleted += (s, n) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    this.LoadingPB.Visibility = Visibility.Hidden;
+                    UpdatePanelTitle.Text = "Обновление загружено. \n Дождитесь завершения установки";
+
+                    string updaterName = "Updater.exe";
+
+                    File.WriteAllBytes(updaterName, Properties.Resources.Updater);
+
+                    Process.Start(updaterName);
+                    Process.GetCurrentProcess().Kill();
+                });
+            };
+
+            Task.Run(() =>
+            {
+                if (typeof(MainWindow).Assembly.GetName().Version < updateChecker.Version)
+                {
+                    string message = "Вышла новая версия программы, необходимо обновление.";
+                    string caption = "Обнаружена новая версия";
+
+                    var result = System.Windows.MessageBox.Show(message, caption);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        UpdatePanelTitle.Text = "Загрузка обновления";
+                    });
+
+                    updateChecker.DownloadUpdateAsync();
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        string updaterName = "Updater.exe";
+                        if (File.Exists(updaterName))
+                            File.Delete(updaterName);
+                        UpdatePanel.Visibility = Visibility.Hidden;
+                    });
+                }
+            });
         }
     }
 }

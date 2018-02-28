@@ -5,33 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AssistantPaladin"
         Title="MainWindow" ResizeMode="NoResize" WindowStyle="None" Height="300" Background="White"
-        Foreground="Black" Width="420" Closing="Window_Closing">
+        Foreground="Black" Width="420" Closing="Window_Closing" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" MinHeight="35" MaxHeight="35" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" MinHeight="35" MaxHeight="35" />
         </Grid.RowDefinitions>
-        <Border>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="4*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Label MouseLeftButtonDown="LabelTitle_MouseLeftButtonDown" x:Name="LabelTitle" Grid.Column="0"
-               VerticalContentAlignment="Center" FontFamily="Calibri" FontSize="16" FontWeight="Bold"
-               HorizontalContentAlignment="Stretch" Background="#FF06870C" Foreground="White">
-                    Настройка автострельбы
-                </Label>
-                <Button Click="ButtonClose_Click" x:Name="ButtonClose" Grid.Column="1" Background="#FFFF7878" FontSize="20"
-                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">✕</Button>
-            </Grid>
-        </Border>
+
         <Grid Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+
             <StackPanel Grid.Column="0">
                 <GroupBox Header="Цвета прицела">
                     <Rectangle Name="aimColor" Height="15" Fill="Gray"></Rectangle>
@@ -74,5 +61,31 @@
             </StackPanel>
         </Grid>
         <Button Click="ButtonStartWork_Click" x:Name="ButtonStartWork" Grid.Row="2" Background="#FFB4FFBB">Включить</Button>
+
+        <!--Панель блокировки для обновления-->
+        <Grid x:Name="UpdatePanel" Background="#bb000000" Grid.ColumnSpan="20" Grid.RowSpan="20">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Name="UpdatePanelTitle" TextAlignment="Center" TextWrapping="WrapWithOverflow" Text="Проверка обновления" Foreground="#FFFFFFFF" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="24" FontWeight="Bold" />
+                    <ProgressBar Name="LoadingPB" Maximum="100" Visibility="Hidden" Height="20" Margin="5"></ProgressBar>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <Border>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label MouseLeftButtonDown="LabelTitle_MouseLeftButtonDown" x:Name="LabelTitle" Grid.Column="0"
+               VerticalContentAlignment="Center" FontFamily="Calibri" FontSize="16" FontWeight="Bold"
+               HorizontalContentAlignment="Stretch" Background="#FF06870C" Foreground="White">
+                    Настройка автострельбы
+                </Label>
+                <Button Click="ButtonClose_Click" x:Name="ButtonClose" Grid.Column="1" Background="#FFFF7878" FontSize="20"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center">✕</Button>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
