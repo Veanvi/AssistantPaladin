@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AssistantPaladin"
-        Title="MainWindow" ResizeMode="NoResize" WindowStyle="None" Height="300" Background="White"
+        Title="MainWindow" ResizeMode="NoResize" WindowStyle="None" Height="360" Background="White"
         Foreground="Black" Width="420" Closing="Window_Closing" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
@@ -29,7 +29,7 @@
                 <GroupBox Header="Цвета противников">
                     <Rectangle Name="anemyColors" Height="15" Fill="Gray"></Rectangle>
                 </GroupBox>
-                <StackPanel Grid.Row="3" Grid.ColumnSpan="2">
+                <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Margin="5">
                     <CheckBox Name="chBoxLKM" IsChecked="True" Click="chBoxLKM_Click">AutoShot ЛКМ</CheckBox>
                     <CheckBox Name="DisableRightButton" Click="DisableRightButton_Click">
                         AutoShot ПКМ (на союзников)
@@ -43,20 +43,32 @@
                     <CheckBox Name="chBoxTranslater" Click="chBoxTranslater_Click">Виджет переводчик</CheckBox>
                     <CheckBox Name="chKayKlicker" Click="chKayKlicker_Click">Цикличное нажатия клавиш:</CheckBox>
                     <TextBox Margin="15, 2, 0, 2" Name="tbKayList">q</TextBox>
+                    <StackPanel>
+                        <StackPanel.ToolTip>
+                            <TextBlock Width="300" TextWrapping="WrapWithOverflow">
+                                Определяет радиус значений цветов в кодировке RGB в котором цвета считаются похожими. При 0 тригер будет срабатывать только на точное совпадение, 10 000 на большой диапазон оттенков забинденых цветов. На персонажах без точки прицела от бедра рекомендовано значение 0, на персонажах с точкой прицела от бедра рекомендовано 500.
+                            </TextBlock>
+                        </StackPanel.ToolTip>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>R похожести цвета:</Label>
+                            <Label Name="SliderValue" Content="{Binding ElementName=NumColorApproxSlider, Path=Value}"></Label>
+                        </StackPanel>
+                        <Slider Name="NumColorApproxSlider" IsSnapToTickEnabled="True"  Maximum="10000" Minimum="1" TickFrequency="100" Value="500" ValueChanged="NumColorApproxSlider_ValueChanged"></Slider>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
 
             <StackPanel Grid.Column="1">
                 <Label FontWeight="Bold">Горячие клавиши</Label>
-                <ListBox>
-                    <ListBoxItem>1 - Бинд цвета прицела</ListBoxItem>
-                    <ListBoxItem>2 - Бинд цвета противников</ListBoxItem>
-                    <ListBoxItem>3 - Бинд цвета союзников</ListBoxItem>
-                    <ListBoxItem>4 - Включить автострельбу</ListBoxItem>
-                    <ListBoxItem>5 - Блокировка горячих клавиш</ListBoxItem>
-                    <ListBoxItem>6 - Сбросить все бинды</ListBoxItem>
-                    <ListBoxItem>Tab - Строка для перевода "ru-en"</ListBoxItem>
-                </ListBox>
+                <StackPanel>
+                    <Label>1 - Бинд цвета прицела</Label>
+                    <Label>2 - Бинд цвета противников</Label>
+                    <Label>3 - Бинд цвета союзников</Label>
+                    <Label>4 - Включить автострельбу</Label>
+                    <Label>5 - Блокировка горячих клавиш</Label>
+                    <Label>6 - Сбросить все бинды</Label>
+                    <Label>Tab - Строка для перевода "ru-en"</Label>
+                </StackPanel>
                 <TextBlock>Поддерживается мультибиндинг</TextBlock>
             </StackPanel>
         </Grid>

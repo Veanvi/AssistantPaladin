@@ -17,43 +17,21 @@ namespace AssistantPaladin
 {
     public class AutoShot
     {
+        public List<Action> AddActionsList = new List<Action>();
         public List<Color> AllyColorList = new List<Color>();
         public List<Color> AnemyColorList = new List<Color>();
-        public List<Action> AddActionsList = new List<Action>();
+
+        private bool allyInSight;
+
         private IDropper dropper;
 
-        public bool isShootBurst { get; set; } = true;
-
-        public bool isRightButtonOn { get; set; } = false;
-        public bool isLeftButtonOn { get; set; } = true;
-
-        public bool isWork { get; set; } = true;
-
-        public Color AimColor { get; set; }
-
-        public Color AllyColor { get; set; }
-
-        public Color AnemyColor { get; set; }
-
-        private bool noOneInSight;
-        private bool allyInSight;
         private bool enemyInSight;
+
         private Point enemyPoint = new Point(0, 0);
 
-        public enum MouseEventFlags : uint
-        {
-            LEFTDOWN = 0x00000002,
-            LEFTUP = 0x00000004,
-            MIDDLEDOWN = 0x00000020,
-            MIDDLEUP = 0x00000040,
-            MOVE = 0x00000001,
-            ABSOLUTE = 0x00008000,
-            RIGHTDOWN = 0x00000008,
-            RIGHTUP = 0x00000010,
-            WHEEL = 0x00000800,
-            XDOWN = 0x00000080,
-            XUP = 0x00000100
-        }
+        private bool noOneInSight;
+
+        private int numColorApprox = 500;
 
         public AutoShot() : this(new WinApiDropper())
         {
@@ -70,6 +48,107 @@ namespace AssistantPaladin
         ~AutoShot()
         {
             //SystemParametersInfo(0x0071, 0, 10, 0);
+        }
+
+        public enum MouseEventFlags : uint
+        {
+            LEFTDOWN = 0x00000002,
+            LEFTUP = 0x00000004,
+            MIDDLEDOWN = 0x00000020,
+            MIDDLEUP = 0x00000040,
+            MOVE = 0x00000001,
+            ABSOLUTE = 0x00008000,
+            RIGHTDOWN = 0x00000008,
+            RIGHTUP = 0x00000010,
+            WHEEL = 0x00000800,
+            XDOWN = 0x00000080,
+            XUP = 0x00000100
+        }
+
+        public Color AimColor { get; set; }
+
+        public Color AllyColor { get; set; }
+
+        public Color AnemyColor { get; set; }
+
+        public bool isLeftButtonOn { get; set; } = true;
+
+        public bool isRightButtonOn { get; set; } = false;
+
+        public bool isShootBurst { get; set; } = true;
+
+        public bool isWork { get; set; } = true;
+
+        public int NumColorApprox
+        {
+            get => numColorApprox;
+            set
+            {
+                if (value > 0 && value < 195000)
+                    numColorApprox = value;
+            }
+        }
+
+        public void AddAimColor()
+        {
+            AimColor = dropper.GetColor();
+            new SoundPlayer(Resources.goodSong).Play();
+        }
+
+        public async Task AddAllyColorAsync()
+        {
+            SoundPlayer ticPlayer = new SoundPlayer();
+            ticPlayer.Stream = (Stream)Resources.ticking_clockSong;
+            Color faundColor = new Color();
+            await Task.Run((Action)(() =>
+            {
+                for (int index = 0; index < 10; ++index)
+                {
+                    Color color = dropper.GetColor();
+                    if (!ApproximateColorSearch(color, AimColor) &&
+                        !ListContainedColorChecking(color, AnemyColorList) &&
+                        !ListContainedColorChecking(color, AllyColorList))
+                    {
+                        faundColor = color;
+                        new SoundPlayer((Stream)Resources.goodSong).Play();
+                        break;
+                    }
+                    ticPlayer.Play();
+                    Thread.Sleep(200);
+                }
+            }));
+            if (faundColor != new Color())
+                AllyColorList.Add(faundColor);
+            else
+                new SoundPlayer((Stream)Resources.errorSong).Play();
+        }
+
+        public async Task AddAnemyColorAsync()
+        {
+            SoundPlayer ticPlayer = new SoundPlayer();
+            ticPlayer.Stream = (Stream)Resources.ticking_clockSong;
+            Color faundColor = new Color();
+            await Task.Run(() =>
+            {
+                for (int index = 0; index < 10; ++index)
+                {
+                    Color color = dropper.GetColor();
+                    if (!ApproximateColorSearch(color, AimColor) &&
+                        !ListContainedColorChecking(color, AnemyColorList) &&
+                        !ListContainedColorChecking(color, AllyColorList))
+                    {
+                        faundColor = color;
+                        new SoundPlayer((Stream)Resources.goodSong).Play();
+                        break;
+                    }
+                    ticPlayer.Play();
+                    Thread.Sleep(200);
+                }
+            });
+            if (faundColor != new Color())
+                AnemyColorList.Add(faundColor);
+            else
+                new SoundPlayer((Stream)Resources.errorSong).Play();
         }
 
         public void Work()
@@ -161,6 +240,42 @@ namespace AssistantPaladin
             });
         }
 
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetCursorPos(out Point lpPoint);
+
+        [DllImport("user32.dll")]
+        private static extern void mouse_event(MouseEventFlags dwFlags, int dx, int dy, uint dwData, UIntPtr dwExtraInfo);
+
+        //Изменение чувствительности мыши
+        [DllImport("User32.dll")]
+        private static extern Boolean SystemParametersInfo(
+            UInt32 uiAction,
+            UInt32 uiParam,
+            UInt32 pvParam,
+            UInt32 fWinIni);
+
+        private bool ApproximateColorSearch(Color currentColor, Color desiretColor)
+        {
+            double fi = Math.Pow(currentColor.R - desiretColor.R, 2)
+                + Math.Pow(currentColor.G - desiretColor.G, 2)
+                + Math.Pow(currentColor.B - desiretColor.B, 2);
+
+            bool result = fi <= NumColorApprox;
+            return result;
+        }
+
+        private bool ListContainedColorChecking(Color currentCollor, IEnumerable<Color> ColorList)
+        {
+            foreach (var color in ColorList)
+            {
+                if (ApproximateColorSearch(currentCollor, color))
+                    return true;
+            }
+
+            return false;
+        }
+
         private void SightСolorАnalysis()
         {
             Color nowAimColor = dropper.GetColor();
@@ -202,105 +317,6 @@ namespace AssistantPaladin
             allyInSight = false;
             enemyInSight = false;
         }
-
-        private bool ApproximateColorSearch(Color currentColor, Color desiretColor,
-            int searchSpreads = 500)
-        {
-            double fi = Math.Pow(currentColor.R - desiretColor.R, 2)
-                + Math.Pow(currentColor.G - desiretColor.G, 2)
-                + Math.Pow(currentColor.B - desiretColor.B, 2);
-
-            bool result = fi < searchSpreads;
-            return result;
-        }
-
-        public void AddAimColor()
-        {
-            AimColor = dropper.GetColor();
-            new SoundPlayer(Resources.goodSong).Play();
-        }
-
-        public async Task AddAllyColorAsync()
-        {
-            SoundPlayer ticPlayer = new SoundPlayer();
-            ticPlayer.Stream = (Stream)Resources.ticking_clockSong;
-            Color faundColor = new Color();
-            await Task.Run((Action)(() =>
-            {
-                for (int index = 0; index < 10; ++index)
-                {
-                    Color color = dropper.GetColor();
-                    if (!ApproximateColorSearch(color, AimColor) &&
-                        !ListContainedColorChecking(color, AnemyColorList) &&
-                        !ListContainedColorChecking(color, AllyColorList))
-                    {
-                        faundColor = color;
-                        new SoundPlayer((Stream)Resources.goodSong).Play();
-                        break;
-                    }
-                    ticPlayer.Play();
-                    Thread.Sleep(200);
-                }
-            }));
-            if (faundColor != new Color())
-                AllyColorList.Add(faundColor);
-            else
-                new SoundPlayer((Stream)Resources.errorSong).Play();
-        }
-
-        public async Task AddAnemyColorAsync()
-        {
-            SoundPlayer ticPlayer = new SoundPlayer();
-            ticPlayer.Stream = (Stream)Resources.ticking_clockSong;
-            Color faundColor = new Color();
-            await Task.Run(() =>
-            {
-                for (int index = 0; index < 10; ++index)
-                {
-                    Color color = dropper.GetColor();
-                    if (!ApproximateColorSearch(color, AimColor) &&
-                        !ListContainedColorChecking(color, AnemyColorList) &&
-                        !ListContainedColorChecking(color, AllyColorList))
-                    {
-                        faundColor = color;
-                        new SoundPlayer((Stream)Resources.goodSong).Play();
-                        break;
-                    }
-                    ticPlayer.Play();
-                    Thread.Sleep(200);
-                }
-            });
-            if (faundColor != new Color())
-                AnemyColorList.Add(faundColor);
-            else
-                new SoundPlayer((Stream)Resources.errorSong).Play();
-        }
-
-        private bool ListContainedColorChecking(Color currentCollor, IEnumerable<Color> ColorList)
-        {
-            foreach (var color in ColorList)
-            {
-                if (ApproximateColorSearch(currentCollor, color))
-                    return true;
-            }
-
-            return false;
-        }
-
-        //Изменение чувствительности мыши
-        [DllImport("User32.dll")]
-        private static extern Boolean SystemParametersInfo(
-            UInt32 uiAction,
-            UInt32 uiParam,
-            UInt32 pvParam,
-            UInt32 fWinIni);
-
-        [DllImport("user32.dll")]
-        private static extern void mouse_event(MouseEventFlags dwFlags, int dx, int dy, uint dwData, UIntPtr dwExtraInfo);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetCursorPos(out Point lpPoint);
 
         private struct Point
         {

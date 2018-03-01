@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -16,6 +17,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using AutoIt;
 
 namespace AssistantPaladin
 {
@@ -25,8 +27,7 @@ namespace AssistantPaladin
     public partial class OverlayWindow : Window
     {
         private Rect rect;
-        private const string gameName = "Paladins (64-bit, DX11)";
-        private IntPtr gameHandle;
+        private const string gameName = "Paladins";
 
         private struct Rect
         {
@@ -52,20 +53,23 @@ namespace AssistantPaladin
             {
                 while (true)
                 {
-                    gameHandle = FindWindow(null, gameName);
-                    var p = GetForegroundWindow();
-                    if (gameHandle != GetForegroundWindow())
+                    Process gameProc = Process.GetProcessesByName(gameName).FirstOrDefault();
+
+                    //var gameHandle = FindWindow(null, gameName);
+                    var gameHandle = gameProc?.MainWindowHandle;
+                    var foregroundWindos = GetForegroundWindow();
+                    if (gameHandle != foregroundWindos)
                     {
                         Dispatcher.InvokeAsync(() =>
                         {
-                            this.Opacity = 0;
+                            ActivateNotFullScreen();
                         });
                     }
                     else
                     {
                         Dispatcher.InvokeAsync(() =>
                         {
-                            this.Opacity = 1;
+                            ActivateFullScreen();
                         });
                     }
                     Task.Delay(300).Wait();
@@ -73,13 +77,29 @@ namespace AssistantPaladin
             });
         }
 
+        private void ActivateNotFullScreen()
+        {
+            this.Opacity = 0;
+
+            this.Width = 1;
+            this.Height = 1;
+            this.Top = 1;
+            this.Left = 1;
+        }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WatchActiveWindow();
+            WatchColorAim();
+        }
+
+        private void ActivateFullScreen()
         {
             var hwnd = new WindowInteropHelper(this).Handle;
             int extendedStyle = GetWindowLong(hwnd, -20);
             SetWindowLong(hwnd, -20, extendedStyle | 0x00000020);
 
-            gameHandle = FindWindow(null, gameName);
+            var gameHandle = AutoItX.WinGetHandle(gameName);
 
             GetWindowRect(gameHandle, out rect);
 
@@ -89,8 +109,7 @@ namespace AssistantPaladin
             this.Top = rect.top - 1;
             this.Left = rect.left + 1;
 
-            WatchActiveWindow();
-            WatchColorAim();
+            this.Opacity = 1;
         }
 
         private void WatchColorAim()
@@ -118,8 +137,8 @@ namespace AssistantPaladin
         [DllImport("user32.dll")]
         public static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        //[DllImport("user32.dll", SetLastError = true)]
+        //private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll")]
         private static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);

@@ -307,5 +307,11 @@ namespace AssistantPaladin
                 }
             });
         }
+
+        private void NumColorApproxSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (autoSHot != null)
+                autoSHot.NumColorApprox = (int)this.NumColorApproxSlider.Value;
+        }
     }
 }
