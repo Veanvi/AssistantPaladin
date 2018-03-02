@@ -17,6 +17,7 @@ using YandexTranslateCSharpSdk;
 using AutoIt;
 using UpdateCheckerGoogleDrive;
 using System.IO;
+using System.Reflection;
 
 namespace AssistantPaladin
 {
@@ -248,6 +249,8 @@ namespace AssistantPaladin
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            this.VersionLabel.Content = typeof(MainWindow).Assembly.GetName().Version.ToString();
+
             string uri = @"https://drive.google.com/open?id=1Gv4zAnSV71NpR5C0OFbbK56YeljuTppS";
             var updateChecker = new UpdateChecker(
                 uri,
@@ -281,10 +284,17 @@ namespace AssistantPaladin
 
             Task.Run(() =>
             {
-                if (typeof(MainWindow).Assembly.GetName().Version < updateChecker.Version)
+                var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                Version lastVersion;
+                do
+                {
+                    lastVersion = updateChecker.Version;
+                } while (lastVersion != new Version());
+
+                if (currentVersion < lastVersion)
                 {
                     string message = "Вышла новая версия программы, необходимо обновление.";
-                    string caption = "Обнаружена новая версия";
+                    string caption = $"Обнаружена новая версия: {updateChecker.Version}";
 
                     var result = System.Windows.MessageBox.Show(message, caption);
 

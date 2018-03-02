@@ -96,11 +96,19 @@
                     <ColumnDefinition Width="4*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label MouseLeftButtonDown="LabelTitle_MouseLeftButtonDown" x:Name="LabelTitle" Grid.Column="0"
+                <StackPanel Orientation="Horizontal" Background="#FF06870C" MouseLeftButtonDown="LabelTitle_MouseLeftButtonDown">
+                    <Label x:Name="LabelTitle"
                VerticalContentAlignment="Center" FontFamily="Calibri" FontSize="16" FontWeight="Bold"
-               HorizontalContentAlignment="Stretch" Background="#FF06870C" Foreground="White">
-                    Настройка автострельбы
-                </Label>
+               HorizontalContentAlignment="Stretch" Foreground="White">
+                        Настройка автострельбы
+                    </Label>
+                    <Label Name="VersionLabel"
+               VerticalContentAlignment="Center" FontFamily="Calibri" FontSize="16" FontWeight="Bold"
+               HorizontalContentAlignment="Stretch" Foreground="White">
+                        0.0.0.0
+                    </Label>
+                </StackPanel>
+
                 <Button Click="ButtonClose_Click" x:Name="ButtonClose" Grid.Column="1" Background="#FFFF7878" FontSize="20"
                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center">✕</Button>
             </Grid>
