@@ -45,9 +45,15 @@
                     <TextBox Margin="15, 2, 0, 2" Name="tbKayList">q</TextBox>
                     <StackPanel>
                         <StackPanel.ToolTip>
-                            <TextBlock Width="300" TextWrapping="WrapWithOverflow">
-                                Определяет радиус значений цветов в кодировке RGB в котором цвета считаются похожими. При 0 тригер будет срабатывать только на точное совпадение, 10 000 на большой диапазон оттенков забинденых цветов. На персонажах без точки прицела от бедра рекомендовано значение 0, на персонажах с точкой прицела от бедра рекомендовано 500.
-                            </TextBlock>
+                            <StackPanel Width="300">
+                                <TextBlock TextWrapping="WrapWithOverflow">
+                                Определяет радиус значений цветов в кодировке RGB в котором цвета считаются похожими.
+                                </TextBlock>
+                                <Label></Label>
+                                <TextBlock TextWrapping="WrapWithOverflow">
+                                    При 1 тригер будет срабатывать только на точное совпадение, 10 000 на большой диапазон оттенков забинденых цветов.
+                                </TextBlock>
+                            </StackPanel>
                         </StackPanel.ToolTip>
                         <StackPanel Orientation="Horizontal">
                             <Label>R похожести цвета:</Label>
