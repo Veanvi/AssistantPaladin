@@ -158,6 +158,8 @@ namespace AssistantPaladin
             {
                 () =>
                 {
+                    DateTime timeStartShootBurst = new DateTime();
+                    bool burstStart = false;
                     while (isWork)
                     {
                         if(isLeftButtonOn && enemyInSight)
@@ -166,7 +168,12 @@ namespace AssistantPaladin
                             var point = AutoItX.MouseGetPos();
                             if (isShootBurst)
                             {
-                                AutoItX.MouseDown("LEFT");
+                                if (burstStart == false)
+                                {
+                                    timeStartShootBurst = DateTime.Now;
+                                    burstStart = true;
+                                    AutoItX.MouseDown("LEFT");
+                                }
                             }
                             else
                             {
@@ -180,7 +187,15 @@ namespace AssistantPaladin
                         }
                         else if (isLeftButtonOn && isShootBurst)
                         {
-                            AutoItX.MouseUp("LEFT");
+                            if (burstStart)
+                            {
+                                var time = timeStartShootBurst - DateTime.Now;
+                                if(time.TotalMilliseconds < -500 && enemyInSight == false)
+                                {
+                                    AutoItX.MouseUp("LEFT");
+                                    burstStart = false;
+                                }
+                            }
                         }
                         Task.Delay(1).Wait();
                     }
