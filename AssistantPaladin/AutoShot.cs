@@ -71,8 +71,8 @@ namespace AssistantPaladin
 
         public Color AnemyColor { get; set; }
 
+        public bool IsColorApproxSearch { get; set; } = false;
         public bool isLeftButtonOn { get; set; } = true;
-
         public bool isRightButtonOn { get; set; } = false;
 
         public bool isShootBurst { get; set; } = true;
@@ -272,11 +272,20 @@ namespace AssistantPaladin
 
         private bool ApproximateColorSearch(Color currentColor, Color desiretColor)
         {
-            double fi = Math.Pow(currentColor.R - desiretColor.R, 2)
-                + Math.Pow(currentColor.G - desiretColor.G, 2)
-                + Math.Pow(currentColor.B - desiretColor.B, 2);
+            bool result = false;
 
-            bool result = fi <= NumColorApprox;
+            if (this.IsColorApproxSearch)
+            {
+                double fi = Math.Pow(currentColor.R - desiretColor.R, 2)
+                        + Math.Pow(currentColor.G - desiretColor.G, 2)
+                        + Math.Pow(currentColor.B - desiretColor.B, 2);
+
+                result = fi <= NumColorApprox;
+            }
+            else
+            {
+                result = currentColor == desiretColor;
+            }
             return result;
         }
 

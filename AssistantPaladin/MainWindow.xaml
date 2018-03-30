@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AssistantPaladin"
-        Title="MainWindow" ResizeMode="NoResize" WindowStyle="None" Height="360" Background="White"
+        Title="MainWindow" ResizeMode="NoResize" WindowStyle="None" Height="400" Background="White"
         Foreground="Black" Width="420" Closing="Window_Closing" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
@@ -55,11 +55,19 @@
                                 </TextBlock>
                             </StackPanel>
                         </StackPanel.ToolTip>
-                        <StackPanel Orientation="Horizontal">
-                            <Label>R похожести цвета:</Label>
-                            <Label Name="SliderValue" Content="{Binding ElementName=NumColorApproxSlider, Path=Value}"></Label>
-                        </StackPanel>
-                        <Slider Name="NumColorApproxSlider" IsSnapToTickEnabled="True"  Maximum="10000" Minimum="1" TickFrequency="100" Value="500" ValueChanged="NumColorApproxSlider_ValueChanged"></Slider>
+
+                        <Border Width="auto" Height="auto" BorderBrush="Gray" BorderThickness="2">
+                            <StackPanel Margin="5">
+                                <CheckBox Name="chBoxIsColorApproxSearch" Click="chBoxIsColorApproxSearch_Click" >Искать похожие цвета</CheckBox>
+                                <StackPanel IsEnabled="{Binding ElementName=chBoxIsColorApproxSearch, Path=IsChecked}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label>R похожести цвета:</Label>
+                                        <Label Name="SliderValue" Content="{Binding ElementName=chBoxIsColorApproxSearch, Path=IsChecked}"></Label>
+                                    </StackPanel>
+                                    <Slider Name="NumColorApproxSlider" IsSnapToTickEnabled="True"  Maximum="10000" Minimum="1" TickFrequency="100" Value="500" ValueChanged="NumColorApproxSlider_ValueChanged"></Slider>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

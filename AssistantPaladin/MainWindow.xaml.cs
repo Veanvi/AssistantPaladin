@@ -139,6 +139,12 @@ namespace AssistantPaladin
             }
         }
 
+        private void chBoxIsColorApproxSearch_Click(object sender, RoutedEventArgs e)
+        {
+            if (autoSHot != null)
+                autoSHot.IsColorApproxSearch = (bool)this.chBoxIsColorApproxSearch.IsChecked;
+        }
+
         private void chBoxLKM_Click(object sender, RoutedEventArgs e)
         {
             if ((bool)this.chBoxLKM.IsChecked)
@@ -198,6 +204,12 @@ namespace AssistantPaladin
         private void LabelTitle_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        private void NumColorApproxSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (autoSHot != null)
+                autoSHot.NumColorApprox = (int)this.NumColorApproxSlider.Value;
         }
 
         private void repaintColor()
@@ -286,10 +298,11 @@ namespace AssistantPaladin
             {
                 var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
                 Version lastVersion;
+                Version emptyersion = new Version();
                 do
                 {
                     lastVersion = updateChecker.Version;
-                } while (lastVersion != new Version());
+                } while (lastVersion == emptyersion);
 
                 if (currentVersion < lastVersion)
                 {
@@ -316,12 +329,6 @@ namespace AssistantPaladin
                     });
                 }
             });
-        }
-
-        private void NumColorApproxSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (autoSHot != null)
-                autoSHot.NumColorApprox = (int)this.NumColorApproxSlider.Value;
         }
     }
 }
