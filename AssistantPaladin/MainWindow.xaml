@@ -62,7 +62,7 @@
                                 <StackPanel IsEnabled="{Binding ElementName=chBoxIsColorApproxSearch, Path=IsChecked}">
                                     <StackPanel Orientation="Horizontal">
                                         <Label>R похожести цвета:</Label>
-                                        <Label Name="SliderValue" Content="{Binding ElementName=chBoxIsColorApproxSearch, Path=IsChecked}"></Label>
+                                        <Label Name="SliderValue" Content="{Binding ElementName=NumColorApproxSlider, Path=Value}"></Label>
                                     </StackPanel>
                                     <Slider Name="NumColorApproxSlider" IsSnapToTickEnabled="True"  Maximum="10000" Minimum="1" TickFrequency="100" Value="500" ValueChanged="NumColorApproxSlider_ValueChanged"></Slider>
                                 </StackPanel>
@@ -89,7 +89,7 @@
         <Button Click="ButtonStartWork_Click" x:Name="ButtonStartWork" Grid.Row="2" Background="#FFB4FFBB">Включить</Button>
 
         <!--Панель блокировки для обновления-->
-        <Grid x:Name="UpdatePanel" Background="#bb000000" Grid.ColumnSpan="20" Grid.RowSpan="20">
+        <Grid x:Name="UpdatePanel" Visibility="Hidden" Background="#bb000000" Grid.ColumnSpan="20" Grid.RowSpan="20">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 <StackPanel>
                     <TextBlock Name="UpdatePanelTitle" TextAlignment="Center" TextWrapping="WrapWithOverflow" Text="Проверка обновления" Foreground="#FFFFFFFF" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="24" FontWeight="Bold" />

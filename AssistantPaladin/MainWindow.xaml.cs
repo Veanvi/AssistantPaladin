@@ -262,6 +262,8 @@ namespace AssistantPaladin
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.VersionLabel.Content = typeof(MainWindow).Assembly.GetName().Version.ToString();
+#if !DEBUG
+            this.UpdatePanel.Visibility = Visibility.Visible;
 
             string uri = @"https://drive.google.com/open?id=1Gv4zAnSV71NpR5C0OFbbK56YeljuTppS";
             var updateChecker = new UpdateChecker(
@@ -329,6 +331,7 @@ namespace AssistantPaladin
                     });
                 }
             });
+#endif
         }
     }
 }
